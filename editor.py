@@ -1,11 +1,9 @@
 import xml.etree.ElementTree as ET
+import xmltodict
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 import sys, os
-import functools
-import binascii
-import struct
 
 
 # Subclass QMainWindow to customize your application's main window
@@ -67,24 +65,74 @@ class SDVapp(QMainWindow):
         helpMenu.addAction(helpMenu_usage)
         helpMenu.addAction(helpMenu_about)
 
-        self.show()
+        ## Toolbar
+        toolbar = self.addToolBar("File")
+        toolbar.setMovable(False)
+        
+        toolbar_openfile = QAction(QIcon(root + '/img/open_file.png'), 'Open File', self)
+        toolbar_openfile.triggered.connect(self.openfile)
 
+        toolbar_savefile = QAction(QIcon(root + '/img/save_file.png'), 'Save File', self)
+        toolbar_savefile.triggered.connect(self.savefile)
+
+        toolbar.addAction(toolbar_openfile)
+        toolbar.addAction(toolbar_savefile)
+
+        #Tabs
+        centralWidget = QWidget(self)
+        centralWidgetLayout = QVBoxLayout(centralWidget)
+        centralWidget.setLayout(centralWidgetLayout)
+
+        tabContainer = QTabWidget(centralWidget)
+
+        tab1 = QWidget(tabContainer)
+        tab2 = QWidget(tabContainer)
+        tab3 = QWidget(tabContainer)
+        tab4 = QWidget(tabContainer)
+        tab5 = QWidget(tabContainer)
+
+        tab1Layout = QVBoxLayout(tab1)
+        tabContainer.setLayout(tab1Layout)
+        tabContainer.addTab(tab1, "Player Settings")
+        tabContainer.addTab(tab2, "Gameplay Data")
+        tabContainer.addTab(tab3, "Skills")
+        tabContainer.addTab(tab4, "Friendship")
+        tabContainer.addTab(tab5, "Animals")
+
+        tabContainer.setCurrentIndex(0)
+        centralWidgetLayout.addWidget(tabContainer)
+        self.setCentralWidget(centralWidget)
+
+
+        self.show()
+    
+    #Open File
     @pyqtSlot()
     def openfile(self):
-        filename = QFileDialog.getOpenFileName(self, 'Open File', 'savedata')
-        if filename[0] == '':
+        self.filename = QFileDialog.getOpenFileName(self, 'Open File', os.path.join(os.getenv("APPDATA"), "StardewValley", "Saves"), "All Files (*.*)")[0]
+        if self.filename == '':
             return
-        if (os.path.getsize(filename[0]) >= 2671000):
-            f = open(filename[0], 'rb').read()
-            global h
-            h = (binascii.hexlify(f))
+        with open(self.filename, 'rb') as f:
+            self.xmldict = xmltodict.parse(f.read())
+            f.close
+            try:
+                self.xmldict['SaveGame']
+            except KeyError as e:
+                raise e
+
+    #Save file
+    def savefile(self):
+        if hasattr(self, "filename") and self.filename != None:
+            savedir = QFileDialog.getSaveFileName(self, 'Save File', 'SaveData')[0]
+            if savedir == '':
+                return
+            with open (savedir, 'w') as f:
+                f.write(xmltodict.unparse(self.xmldict))
+                f.close
+            QMessageBox.information(self, "Saved", "Your Game has been saved!")
         else:
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Warning)
-            msg.setText("Not a valid savefile!")
-            msg.setWindowTitle("Not valid")
-            msg.setWindowIcon(QIcon(root + '/img/icon.ico'))
-            msg.exec_()
+            QMessageBox.information(self, "No file to save", "Invaid save")
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

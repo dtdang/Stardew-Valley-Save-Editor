@@ -1,0 +1,61 @@
+Player Setting
+______________
+Name
+Farm Name
+Favorite THing
+Animal Preference
+Male/Female
+Skin Color
+Hair Style
+Shirt
+Acc
+Shoes
+Facial Hair
+Eye Color
+Hair Color
+Pants Color
+
+Gameplay Data
+_____________
+Played Days
+Played Time
+Money
+Total Earnings
+Coins
+Stamina
+Max Stamina
+Health
+Max Health
+Attack
+Speed
+
+Skill
+Farming Level/Exp
+Mining Level/Exp
+Foraging Level/Exp
+Fishing Level/Exp
+Combat Level/Exp
+
+Level: Experience points
+Lv.1: 100
+Lv.2: 380
+Lv.3: 770
+Lv.4: 1300
+Lv.5: 2150
+Lv.6: 3300
+Lv.7: 4800
+Lv.8: 6900
+Lv.9: 10000
+Lv.10: 15000
+
+(1) Edit to the next level's experience points -1 in the save editor
+(2) Increase experience points by 1 or more in the game
+(3) Sleep at my own house
+(4) Level up
+
+Friendships
+
+Animal Friendships
+-farm animal -> type
+-name
+-happiness
